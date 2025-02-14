@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Banquet Hall Booking</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <h1>Banquet Hall Booking</h1>
+
+    <label for="hallSelect">Select Hall:</label>
+    <select id="hallSelect">
+        <option value="Marriage Hall">Marriage Hall</option>
+        <option value="Banquet Hall">Banquet Hall</option>
+    </select>
+
+    <div class="calendar-header">
+        <button onclick="changeMonth(-1)">◀ Previous</button>
+        <h2 id="monthYear"></h2>
+        <button onclick="changeMonth(1)">Next ▶</button>
+    </div>
+
+    <div id="calendar"></div>
+
+    <!-- Booking Form -->
+    <div id="bookingForm" class="hidden">
+        <h2>Book an Event</h2>
+        <input type="date" id="bookingDate" readonly>
+        <input type="text" id="name" placeholder="Name" required>
+        <input type="text" id="phone" placeholder="Phone" required>
+        <input type="text" id="address" placeholder="Address" required>
+        <select id="eventType">
+            <option>Marriage</option>
+            <option>Engagement</option>
+            <option>Birthday</option>
+            <option>Baby Shower</option>
+            <option>Haldi</option>
+        </select>
+        <button onclick="saveBooking()">Save Booking</button>
+        <button onclick="closeForm()">Cancel</button>
+    </div>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
