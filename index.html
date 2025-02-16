@@ -3,46 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Banquet Hall Booking</title>
+    <title>Banquet Booking</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-
     <h1>Banquet Hall Booking</h1>
-
-    <label for="hallSelect">Select Hall:</label>
-    <select id="hallSelect">
-        <option value="Marriage Hall">Marriage Hall</option>
-        <option value="Banquet Hall">Banquet Hall</option>
-    </select>
-
-    <div class="calendar-header">
-        <button onclick="changeMonth(-1)">◀ Previous</button>
-        <h2 id="monthYear"></h2>
-        <button onclick="changeMonth(1)">Next ▶</button>
+    <div class="calendar-controls">
+        <button id="prevMonth">&#10094;</button>
+        <span id="currentMonthYear"></span>
+        <button id="nextMonth">&#10095;</button>
+    </div>
+    <div class="calendar" id="calendar"></div>
+    
+    <div id="bookingModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeModal">&times;</span>
+            <h2>Book Event</h2>
+            <input type="text" id="name" placeholder="Name">
+            <input type="text" id="phone" placeholder="Phone No">
+            <input type="text" id="village" placeholder="Village Name">
+            <input type="number" id="price" placeholder="Price">
+            <select id="event">
+                <option value="Marriage">Marriage</option>
+                <option value="Engagement">Engagement</option>
+                <option value="Birthday">Birthday</option>
+                <option value="Baby Shower">Baby Shower</option>
+                <option value="Haldi Program">Haldi Program</option>
+            </select>
+            <button id="saveBooking">Save Booking</button>
+        </div>
     </div>
 
-    <div id="calendar"></div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const calendar = document.getElementById("calendar");
+            const currentMonthYear = document.getElementById("currentMonthYear");
+            const prevMonthBtn = document.getElementById("prevMonth");
+            const nextMonthBtn = document.getElementById("nextMonth");
+            const bookingModal = document.getElementById("bookingModal");
+            const closeModal = document.getElementById("closeModal");
+            const saveBooking = document.getElementById("saveBooking");
+            let selectedDate;
+            let bookings = JSON.parse(localStorage.getItem("bookings")) || {};
 
-    <!-- Booking Form -->
-    <div id="bookingForm" class="hidden">
-        <h2>Book an Event</h2>
-        <input type="date" id="bookingDate" readonly>
-        <input type="text" id="name" placeholder="Name" required>
-        <input type="text" id="phone" placeholder="Phone" required>
-        <input type="text" id="address" placeholder="Address" required>
-        <select id="eventType">
-            <option>Marriage</option>
-            <option>Engagement</option>
-            <option>Birthday</option>
-            <option>Baby Shower</option>
-            <option>Haldi</option>
-        </select>
-        <button onclick="saveBooking()">Save Booking</button>
-        <button onclick="closeForm()">Cancel</button>
-    </div>
+            let today = new Date();
+            let currentMonth = today.getMonth();
+            let currentYear = today.getFullYear();
 
-    <script src="script.js"></script>
+            function renderCalendar(month, year) {
+                calendar.innerHTML = "";
+                let firstDay = new Date(year, month, 1).getDay();
+                let daysInMonth = new Date(year, month + 1, 0).getDate();
+                currentMonthYear.textContent = new Date(year, month).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 
+                for (let i = 0; i < firstDay; i++) {
+                    calendar.innerHTML += '<div></div>';
+                }
+                for (let day = 1; day <= daysInMonth; day++) {
+                    let dateKey = `${year}-${month + 1}-${day}`;
+                    let dayElement = document.createElement("div");
+                    dayElement.textContent = day;
+                    dayElement.dataset.date = dateKey;
+                    if (bookings[dateKey]) {
+                        dayElement.classList.add("booked");
+                    }
+                    dayElement.addEventListener("click", function () {
+                        selectedDate = this.dataset.date;
+                        bookingModal.style.display = "block";
+                    });
+                    calendar.appendChild(dayElement);
+                }
+            }
+
+            prevMonthBtn.addEventListener("click", function () {
+                currentMonth--;
+                if (currentMonth < 0) {
+                    currentMonth = 11;
+                    currentYear--;
+                }
+                renderCalendar(currentMonth, currentYear);
+            });
+
+            nextMonthBtn.addEventListener("click", function () {
+                currentMonth++;
+                if (currentMonth > 11) {
+                    currentMonth = 0;
+                    currentYear++;
+                }
+                renderCalendar(currentMonth, currentYear);
+            });
+
+            closeModal.addEventListener("click", function () {
+                bookingModal.style.display = "none";
+            });
+
+            saveBooking.addEventListener("click", function () {
+                let name = document.getElementById("name").value;
+                let phone = document.getElementById("phone").value;
+                let village = document.getElementById("village").value;
+                let price = document.getElementById("price").value;
+                let event = document.getElementById("event").value;
+
+                if (name && phone && village && price && event) {
+                    bookings[selectedDate] = { name, phone, village, price, event };
+                    localStorage.setItem("bookings", JSON.stringify(bookings));
+                    bookingModal.style.display = "none";
+                    renderCalendar(currentMonth, currentYear);
+                } else {
+                    alert("Please fill all fields");
+                }
+            });
+
+            renderCalendar(currentMonth, currentYear);
+        });
+    </script>
 </body>
 </html>
