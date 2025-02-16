@@ -93,3 +93,129 @@ input, select {
   border: 1px solid #ccc;
   border-radius: 5px;
 }
+.hall-label {
+  font-weight: bold;
+  font-size: 18px;
+  margin-right: 10px;
+}
+
+.hall-select {
+  width: 25%;
+  padding: 5px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+@media only screen and (max-device-width: 480px)
+{
+  body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+  }
+  
+  h1 {
+    margin: 20px 0;
+  }
+  
+  .calendar-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  #currentMonthYear {
+    margin: 0 15px;
+    font-size: 20px;
+    font-weight: bold;
+  }
+  
+  .calendar {
+    display: grid
+;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0px;
+    max-width: 353px;
+    margin: auto;
+    background: white;
+    padding: 9px;
+    border-radius: 1px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+  
+  .calendar div {
+    padding: 15px;
+    border: 1px solid #ddd;
+    cursor: pointer;
+    background: white;
+  }
+  
+  .calendar div.booked {
+    background: red;
+    color: white;
+  }
+  
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+  
+  .modal-content {
+    background-color: white;
+    margin: 10% auto;
+    padding: 20px;
+    width: 300px;
+    border-radius: 5px;
+  }
+  
+  .close {
+    float: right;
+    font-size: 20px;
+    cursor: pointer;
+  }
+  
+  button {
+    background: #28a745;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  button:hover {
+    background: #218838;
+  }
+  
+  input, select {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  .hall-label {
+    font-weight: bold;
+    font-size: 18px;
+    margin-right: 10px;
+  }
+  
+  .hall-select {
+    width: 25%;
+    padding: 5px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+}

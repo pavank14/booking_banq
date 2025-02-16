@@ -8,11 +8,20 @@
 </head>
 <body>
     <h1>Banquet Hall Booking</h1>
+
+    <label for="hallType" class="hall-label">Select Hall Type:</label>
+<select id="hallType" class="hall-select">
+    <option value="Marriage">Marriage Hall</option>
+    <option value="Banquet">Banquet Hall</option>
+</select>
+
+
     <div class="calendar-controls">
         <button id="prevMonth">&#10094;</button>
         <span id="currentMonthYear"></span>
         <button id="nextMonth">&#10095;</button>
     </div>
+
     <div class="calendar" id="calendar"></div>
     
     <div id="bookingModal" class="modal">
@@ -33,7 +42,15 @@
                 </select>
                 <button id="saveBooking">Save Booking</button>
             </div>
-            <div id="bookingDetails" style="display: none;"></div>
+
+            <div id="bookingDetails" style="display:none;">
+                <p><strong>Name:</strong> <span id="detailName"></span></p>
+                <p><strong>Phone:</strong> <span id="detailPhone"></span></p>
+                <p><strong>Village:</strong> <span id="detailVillage"></span></p>
+                <p><strong>Price:</strong> <span id="detailPrice"></span></p>
+                <p><strong>Event:</strong> <span id="detailEvent"></span></p>
+                <button id="deleteBooking">Delete Booking</button>
+            </div>
         </div>
     </div>
 
@@ -46,15 +63,18 @@
             const bookingModal = document.getElementById("bookingModal");
             const closeModal = document.getElementById("closeModal");
             const saveBooking = document.getElementById("saveBooking");
+            const deleteBooking = document.getElementById("deleteBooking");
+            const hallTypeSelect = document.getElementById("hallType");
             const bookingForm = document.getElementById("bookingForm");
             const bookingDetails = document.getElementById("bookingDetails");
             const modalTitle = document.getElementById("modalTitle");
-            let selectedDate;
-            let bookings = JSON.parse(localStorage.getItem("bookings")) || {};
 
+            let selectedDate;
             let today = new Date();
             let currentMonth = today.getMonth();
             let currentYear = today.getFullYear();
+            let selectedHall = hallTypeSelect.value;
+            let bookings = JSON.parse(localStorage.getItem(`bookings_${selectedHall}`)) || {};
 
             function renderCalendar(month, year) {
                 calendar.innerHTML = "";
@@ -65,46 +85,80 @@
                 for (let i = 0; i < firstDay; i++) {
                     calendar.innerHTML += '<div></div>';
                 }
+
                 for (let day = 1; day <= daysInMonth; day++) {
                     let dateKey = `${year}-${month + 1}-${day}`;
                     let dayElement = document.createElement("div");
                     dayElement.textContent = day;
                     dayElement.dataset.date = dateKey;
+                    
                     if (bookings[dateKey]) {
                         dayElement.classList.add("booked");
                     }
+
                     dayElement.addEventListener("click", function () {
                         selectedDate = this.dataset.date;
                         if (bookings[selectedDate]) {
                             showBookingDetails(selectedDate);
                         } else {
-                            showBookingForm();
+                            openBookingForm();
                         }
-                        bookingModal.style.display = "block";
                     });
+
                     calendar.appendChild(dayElement);
                 }
             }
 
-            function showBookingForm() {
+            function openBookingForm() {
                 modalTitle.textContent = "Book Event";
                 bookingForm.style.display = "block";
                 bookingDetails.style.display = "none";
+                bookingModal.style.display = "block";
             }
 
             function showBookingDetails(date) {
                 let booking = bookings[date];
+                document.getElementById("detailName").textContent = booking.name;
+                document.getElementById("detailPhone").textContent = booking.phone;
+                document.getElementById("detailVillage").textContent = booking.village;
+                document.getElementById("detailPrice").textContent = booking.price;
+                document.getElementById("detailEvent").textContent = booking.event;
+
                 modalTitle.textContent = "Booking Details";
-                bookingDetails.innerHTML = `
-                    <p><strong>Name:</strong> ${booking.name}</p>
-                    <p><strong>Phone:</strong> ${booking.phone}</p>
-                    <p><strong>Village:</strong> ${booking.village}</p>
-                    <p><strong>Price:</strong> ${booking.price}</p>
-                    <p><strong>Event:</strong> ${booking.event}</p>
-                `;
                 bookingForm.style.display = "none";
                 bookingDetails.style.display = "block";
+                bookingModal.style.display = "block";
             }
+
+            saveBooking.addEventListener("click", function () {
+                let name = document.getElementById("name").value;
+                let phone = document.getElementById("phone").value;
+                let village = document.getElementById("village").value;
+                let price = document.getElementById("price").value;
+                let event = document.getElementById("event").value;
+
+                if (name && phone && village && price && event) {
+                    bookings[selectedDate] = { name, phone, village, price, event };
+                    localStorage.setItem(`bookings_${selectedHall}`, JSON.stringify(bookings));
+                    bookingModal.style.display = "none";
+                    renderCalendar(currentMonth, currentYear);
+                } else {
+                    alert("Please fill all fields");
+                }
+            });
+
+            deleteBooking.addEventListener("click", function () {
+                delete bookings[selectedDate];
+                localStorage.setItem(`bookings_${selectedHall}`, JSON.stringify(bookings));
+                bookingModal.style.display = "none";
+                renderCalendar(currentMonth, currentYear);
+            });
+
+            hallTypeSelect.addEventListener("change", function () {
+                selectedHall = this.value;
+                bookings = JSON.parse(localStorage.getItem(`bookings_${selectedHall}`)) || {};
+                renderCalendar(currentMonth, currentYear);
+            });
 
             prevMonthBtn.addEventListener("click", function () {
                 currentMonth--;
@@ -126,23 +180,6 @@
 
             closeModal.addEventListener("click", function () {
                 bookingModal.style.display = "none";
-            });
-
-            saveBooking.addEventListener("click", function () {
-                let name = document.getElementById("name").value;
-                let phone = document.getElementById("phone").value;
-                let village = document.getElementById("village").value;
-                let price = document.getElementById("price").value;
-                let event = document.getElementById("event").value;
-
-                if (name && phone && village && price && event) {
-                    bookings[selectedDate] = { name, phone, village, price, event };
-                    localStorage.setItem("bookings", JSON.stringify(bookings));
-                    bookingModal.style.display = "none";
-                    renderCalendar(currentMonth, currentYear);
-                } else {
-                    alert("Please fill all fields");
-                }
             });
 
             renderCalendar(currentMonth, currentYear);
