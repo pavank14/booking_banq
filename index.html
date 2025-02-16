@@ -18,19 +18,22 @@
     <div id="bookingModal" class="modal">
         <div class="modal-content">
             <span class="close" id="closeModal">&times;</span>
-            <h2>Book Event</h2>
-            <input type="text" id="name" placeholder="Name">
-            <input type="text" id="phone" placeholder="Phone No">
-            <input type="text" id="village" placeholder="Village Name">
-            <input type="number" id="price" placeholder="Price">
-            <select id="event">
-                <option value="Marriage">Marriage</option>
-                <option value="Engagement">Engagement</option>
-                <option value="Birthday">Birthday</option>
-                <option value="Baby Shower">Baby Shower</option>
-                <option value="Haldi Program">Haldi Program</option>
-            </select>
-            <button id="saveBooking">Save Booking</button>
+            <h2 id="modalTitle">Book Event</h2>
+            <div id="bookingForm">
+                <input type="text" id="name" placeholder="Name">
+                <input type="text" id="phone" placeholder="Phone No">
+                <input type="text" id="village" placeholder="Village Name">
+                <input type="number" id="price" placeholder="Price">
+                <select id="event">
+                    <option value="Marriage">Marriage</option>
+                    <option value="Engagement">Engagement</option>
+                    <option value="Birthday">Birthday</option>
+                    <option value="Baby Shower">Baby Shower</option>
+                    <option value="Haldi Program">Haldi Program</option>
+                </select>
+                <button id="saveBooking">Save Booking</button>
+            </div>
+            <div id="bookingDetails" style="display: none;"></div>
         </div>
     </div>
 
@@ -43,6 +46,9 @@
             const bookingModal = document.getElementById("bookingModal");
             const closeModal = document.getElementById("closeModal");
             const saveBooking = document.getElementById("saveBooking");
+            const bookingForm = document.getElementById("bookingForm");
+            const bookingDetails = document.getElementById("bookingDetails");
+            const modalTitle = document.getElementById("modalTitle");
             let selectedDate;
             let bookings = JSON.parse(localStorage.getItem("bookings")) || {};
 
@@ -69,10 +75,35 @@
                     }
                     dayElement.addEventListener("click", function () {
                         selectedDate = this.dataset.date;
+                        if (bookings[selectedDate]) {
+                            showBookingDetails(selectedDate);
+                        } else {
+                            showBookingForm();
+                        }
                         bookingModal.style.display = "block";
                     });
                     calendar.appendChild(dayElement);
                 }
+            }
+
+            function showBookingForm() {
+                modalTitle.textContent = "Book Event";
+                bookingForm.style.display = "block";
+                bookingDetails.style.display = "none";
+            }
+
+            function showBookingDetails(date) {
+                let booking = bookings[date];
+                modalTitle.textContent = "Booking Details";
+                bookingDetails.innerHTML = `
+                    <p><strong>Name:</strong> ${booking.name}</p>
+                    <p><strong>Phone:</strong> ${booking.phone}</p>
+                    <p><strong>Village:</strong> ${booking.village}</p>
+                    <p><strong>Price:</strong> ${booking.price}</p>
+                    <p><strong>Event:</strong> ${booking.event}</p>
+                `;
+                bookingForm.style.display = "none";
+                bookingDetails.style.display = "block";
             }
 
             prevMonthBtn.addEventListener("click", function () {
